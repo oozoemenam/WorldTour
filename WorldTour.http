@@ -1,0 +1,6 @@
+@WorldTour_HostAddress = http://localhost:5143
+
+GET {{WorldTour_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
