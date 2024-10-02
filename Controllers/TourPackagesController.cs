@@ -2,49 +2,43 @@
 using Microsoft.EntityFrameworkCore;
 using WorldTour.Data;
 using WorldTour.Models;
+using WorldTour.TourPackages.Commands.CreateTourPackage;
+using WorldTour.TourPackages.Commands.DeleteTourPackage;
+using WorldTour.TourPackages.Commands.UpdateTourPackage;
+using WorldTour.TourPackages.Commands.UpdateTourPackageDetail;
 
 namespace WorldTour.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TourPackagesController : ControllerBase
+public class TourPackagesController : ApiController
 {
-    private readonly TourDbContext _context;
-
-    public TourPackagesController(TourDbContext context)
-    {
-        _context = context;
-    }
-
-    [HttpGet]
-    public IActionResult Get()
-    {
-        return Ok(_context.TourPackages);
-    }
-
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] TourPackage tourPackage)
+    public async Task<ActionResult<int>> Create(CreateTourPackageCommand command)
     {
-        await _context.TourPackages.AddAsync(tourPackage);
-        await _context.SaveChangesAsync();
-        return Ok(tourPackage);
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
-    {
-        var tourPackage = await _context.TourPackages.SingleOrDefaultAsync(i => i.Id == id);
-        if (tourPackage == null) return NotFound();
-        _context.TourPackages.Remove(tourPackage);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        return await Mediator.Send(command);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TourPackage tourPackage)
+    public async Task<ActionResult> Update([FromRoute] int id, [FromBody] UpdateTourPackageCommand command)
     {
-        _context.Update(tourPackage);
-        await _context.SaveChangesAsync();
-        return Ok(tourPackage);
+        if (id != command.Id) return BadRequest();
+        await Mediator.Send(command);
+        return NoContent();
+    }
+
+    [HttpPut("[action]")]
+    public async Task<ActionResult> UpdateItemDetails([FromRoute] int id, [FromBody] UpdateTourPackageDetailCommand command)
+    {
+        if (id != command.Id) return BadRequest();
+        await Mediator.Send(command);
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete([FromRoute] int id)
+    {
+        await Mediator.Send(new DeleteTourPackageCommand { Id = id });
+        return NoContent();
     }
 }
