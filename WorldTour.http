@@ -4,3 +4,10 @@ GET {{WorldTour_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+POST http://localhost:5000/Users/auth 
+Content-Type: application/json
+
+{
+"username": "randomusername",
+"password": "strongpassword"
+}

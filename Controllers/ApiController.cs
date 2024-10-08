@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WorldTour.Common.Helpers;
 
 namespace WorldTour.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 public abstract class ApiController: ControllerBase
